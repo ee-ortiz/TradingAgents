@@ -194,7 +194,7 @@ This version leverages OpenRouter's **native web search capabilities** for real-
 python3 -m cli.main
 ```
 
-The CLI provides an interactive interface for selecting tickers, dates, models, and research depth.
+The CLI provides an interactive interface for selecting tickers, dates and research depth.
 
 <p align="center">
   <img src="assets/cli/cli_init.png" width="100%" style="display: inline-block; margin: 0 2%;">
