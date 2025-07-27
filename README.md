@@ -171,22 +171,16 @@ This version leverages OpenRouter's **native web search capabilities** for real-
 - **Market Context**: Real-time market conditions and sector trends
 
 ### **Web Search Implementation**
-- **Automatic Model Enhancement**: `:online` suffix added when `use_web_search=True`
 - **Source Citations**: OpenRouter provides URLs for verification
 - **Cost Predictable**: $4 per 1000 search results ($0.02 per 5-result search)
 - **No External APIs**: Eliminates need for FinnHub, NewsAPI, etc.
 
 ### **Model Configuration**
-- **DeepSeek R1**: Used for deep reasoning tasks (bull/bear research, risk analysis)
-- **DeepSeek Chat**: Used for quick analysis tasks with web search capability
-- **Free + Web Search**: Most cost-effective real-time analysis
 - **Easy Model Switching**: Change models via config without code changes
 
 ### **Performance Features**
 - **No External Embeddings**: Memory system uses ChromaDB's built-in embeddings
 - **Unified API**: Single OpenRouter client handles all LLM interactions
-- **Site Tracking**: Optional OpenRouter usage tracking for rankings
-- **Error Handling**: Robust fallbacks for API limitations
 
 ### **Cost Optimization**
 - Uses free tier models by default (DeepSeek family)
