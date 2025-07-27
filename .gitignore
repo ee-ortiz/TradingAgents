@@ -1,9 +1,49 @@
-env/
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Project specific data
 *.csv
-src/
+data/
+results/
 eval_results/
 eval_data/
+logs/
+*.log
+
+# Python packaging
 *.egg-info/
-.env
+dist/
+build/
+
+# TradingAgents cache
+tradingagents/dataflows/data_cache/
+
+# Test outputs
+test_output/
+coverage_reports/

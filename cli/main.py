@@ -2,6 +2,7 @@ from typing import Optional
 import datetime
 import typer
 from pathlib import Path
+from dotenv import load_dotenv
 from functools import wraps
 from rich.console import Console
 from rich.panel import Panel
@@ -11,7 +12,6 @@ from rich.columns import Columns
 from rich.markdown import Markdown
 from rich.layout import Layout
 from rich.text import Text
-from rich.live import Live
 from rich.table import Table
 from collections import deque
 import time
@@ -24,6 +24,12 @@ from tradingagents.graph.trading_graph import TradingAgentsGraph
 from tradingagents.default_config import DEFAULT_CONFIG
 from cli.models import AnalystType
 from cli.utils import *
+
+from tradingagents.utils.pdf_generator import generate_pdf_reports
+
+# Load environment variables from .env file if exists
+if Path(".env").exists():
+    load_dotenv()
 
 console = Console()
 
@@ -300,7 +306,7 @@ def update_display(layout, spinner_text=None):
         # Convert content to string if it's not already
         content_str = content
         if isinstance(content, list):
-            # Handle list of content blocks (Anthropic format)
+            # Handle list of content blocks (various LLM formats)
             text_parts = []
             for item in content:
                 if isinstance(item, dict):
@@ -425,71 +431,39 @@ def get_user_selections():
             box_content += f"\n[dim]Default: {default}[/dim]"
         return Panel(box_content, border_style="blue", padding=(1, 2))
 
-    # Step 1: Ticker symbol
-    console.print(
-        create_question_box(
-            "Step 1: Ticker Symbol", "Enter the ticker symbol to analyze", "SPY"
-        )
-    )
+    # Step 1 – ticker symbol
+    console.print(create_question_box("Step 1: Ticker Symbol",
+                                      "Enter the ticker symbol to analyze",
+                                      "SPY"))
     selected_ticker = get_ticker()
 
-    # Step 2: Analysis date
+    # Step 2 – analysis date
     default_date = datetime.datetime.now().strftime("%Y-%m-%d")
-    console.print(
-        create_question_box(
-            "Step 2: Analysis Date",
-            "Enter the analysis date (YYYY-MM-DD)",
-            default_date,
-        )
-    )
+    console.print(create_question_box("Step 2: Analysis Date",
+                                      "Enter the analysis date (YYYY-MM-DD)",
+                                      default_date))
     analysis_date = get_analysis_date()
 
-    # Step 3: Select analysts
-    console.print(
-        create_question_box(
-            "Step 3: Analysts Team", "Select your LLM analyst agents for the analysis"
-        )
-    )
+    # Step 3 – analysts team
+    console.print(create_question_box("Step 3: Analysts Team",
+                                      "Select your LLM analyst agents for the analysis"))
     selected_analysts = select_analysts()
-    console.print(
-        f"[green]Selected analysts:[/green] {', '.join(analyst.value for analyst in selected_analysts)}"
-    )
+    console.print(f"[green]Selected analysts:[/green] "
+                  f"{', '.join(analyst.value for analyst in selected_analysts)}")
 
-    # Step 4: Research depth
-    console.print(
-        create_question_box(
-            "Step 4: Research Depth", "Select your research depth level"
-        )
-    )
+    # Step 4 – research depth
+    console.print(create_question_box("Step 4: Research Depth",
+                                      "Select your research depth level"))
     selected_research_depth = select_research_depth()
 
-    # Step 5: OpenAI backend
-    console.print(
-        create_question_box(
-            "Step 5: OpenAI backend", "Select which service to talk to"
-        )
-    )
-    selected_llm_provider, backend_url = select_llm_provider()
-    
-    # Step 6: Thinking agents
-    console.print(
-        create_question_box(
-            "Step 6: Thinking Agents", "Select your thinking agents for analysis"
-        )
-    )
-    selected_shallow_thinker = select_shallow_thinking_agent(selected_llm_provider)
-    selected_deep_thinker = select_deep_thinking_agent(selected_llm_provider)
-
+    # Return all selections as a dictionary
     return {
         "ticker": selected_ticker,
         "analysis_date": analysis_date,
         "analysts": selected_analysts,
         "research_depth": selected_research_depth,
-        "llm_provider": selected_llm_provider.lower(),
-        "backend_url": backend_url,
-        "shallow_thinker": selected_shallow_thinker,
-        "deep_thinker": selected_deep_thinker,
     }
+
 
 
 def get_ticker():
@@ -713,11 +687,82 @@ def update_research_team_status(status):
         message_buffer.update_agent_status(agent, status)
 
 def extract_content_string(content):
+    """Extract string content from various message content formats."""
+    if isinstance(content, str):
+        return content
+    elif isinstance(content, list):
+        # Handle list of content blocks
+        text_parts = []
+        for item in content:
+            if isinstance(item, dict):
+                if item.get("type") == "text" and "text" in item:
+                    text_parts.append(item["text"])
+                elif "text" in item:
+                    text_parts.append(str(item["text"]))
+                else:
+                    text_parts.append(str(item))
+            else:
+                text_parts.append(str(item))
+        return " ".join(text_parts)
+    else:
+        return str(content)
+
+
+def generate_pdf_reports_cli(symbol: str, date: str, results_dir: str):
+    """Generate PDF reports from the CLI with user feedback."""
+  
+    try:
+        console.print(f"\n📄 [blue]Generating PDF reports for {symbol} ({date})...[/blue]")
+        
+        result = generate_pdf_reports(symbol, date, results_dir)
+        
+        if "error" in result:
+            console.print(f"❌ [red]PDF generation failed:[/red] {result['error']}")
+        else:
+            console.print("✅ [green]PDF reports generated successfully![/green]")
+            console.print(f"📁 [cyan]Output directory:[/cyan] {result.get('output_dir', 'N/A')}")
+            
+            # Show file names
+            full_report = result.get('full_report', '')
+            summary = result.get('summary', '')
+            
+            if full_report:
+                import os
+                console.print(f"📊 [green]Comprehensive report:[/green] {os.path.basename(full_report)}")
+            
+            if summary:
+                import os
+                console.print(f"📋 [green]Executive summary:[/green] {os.path.basename(summary)}")
+            
+    except Exception as e:
+        console.print(f"❌ [red]Failed to generate PDF reports:[/red] {str(e)}")
+
+
+def extract_content_string(content):
+    """Extract string content from various message content formats."""
+    if isinstance(content, str):
+        return content
+    elif isinstance(content, list):
+        # Handle list of content blocks
+        text_parts = []
+        for item in content:
+            if isinstance(item, dict):
+                if item.get("type") == "text" and "text" in item:
+                    text_parts.append(item["text"])
+                elif "text" in item:
+                    text_parts.append(str(item["text"]))
+                else:
+                    text_parts.append(str(item))
+            else:
+                text_parts.append(str(item))
+        return " ".join(text_parts)
+    else:
+        return str(content)
     """Extract string content from various message formats."""
     if isinstance(content, str):
         return content
     elif isinstance(content, list):
-        # Handle Anthropic's list format
+        # Handle various LLM response formats
         text_parts = []
         for item in content:
             if isinstance(item, dict):
@@ -739,14 +784,12 @@ def run_analysis():
     config = DEFAULT_CONFIG.copy()
     config["max_debate_rounds"] = selections["research_depth"]
     config["max_risk_discuss_rounds"] = selections["research_depth"]
-    config["quick_think_llm"] = selections["shallow_thinker"]
-    config["deep_think_llm"] = selections["deep_thinker"]
-    config["backend_url"] = selections["backend_url"]
-    config["llm_provider"] = selections["llm_provider"].lower()
 
     # Initialize the graph
     graph = TradingAgentsGraph(
-        [analyst.value for analyst in selections["analysts"]], config=config, debug=True
+        [a.value for a in selections["analysts"]],
+        config=config,
+        debug=True,
     )
 
     # Create result directory
@@ -1092,6 +1135,9 @@ def run_analysis():
 
         # Display the complete final report
         display_complete_report(final_state)
+
+        # Generate PDF reports
+        generate_pdf_reports_cli(selections["ticker"], selections["analysis_date"], config.get("results_dir", "./results"))
 
         update_display(layout)
 

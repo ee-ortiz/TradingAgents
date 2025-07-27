@@ -703,105 +703,176 @@ def get_YFin_data(
 
 
 def get_stock_news_openai(ticker, curr_date):
+    """
+    Get stock news and social media analysis using OpenRouter with web search capabilities.
+    
+    Args:
+        ticker (str): Stock ticker symbol
+        curr_date (str): Current date in YYYY-MM-DD format
+        
+    Returns:
+        str: Real-time analysis of stock news and social media sentiment
+    """
     config = get_config()
-    client = OpenAI(base_url=config["backend_url"])
-
-    response = client.responses.create(
-        model=config["quick_think_llm"],
-        input=[
-            {
-                "role": "system",
-                "content": [
-                    {
-                        "type": "input_text",
-                        "text": f"Can you search Social Media for {ticker} from 7 days before {curr_date} to {curr_date}? Make sure you only get the data posted during that period.",
-                    }
-                ],
-            }
-        ],
-        text={"format": {"type": "text"}},
-        reasoning={},
-        tools=[
-            {
-                "type": "web_search_preview",
-                "user_location": {"type": "approximate"},
-                "search_context_size": "low",
-            }
-        ],
-        temperature=1,
-        max_output_tokens=4096,
-        top_p=1,
-        store=True,
+    client = OpenAI(
+        base_url=config["backend_url"],
+        api_key=os.getenv("OPENROUTER_API_KEY"),
+        default_headers={
+            "HTTP-Referer": config.get("openrouter_site_url", ""),
+            "X-Title": config.get("openrouter_site_name", ""),
+        }
     )
 
-    return response.output[1].content[0].text
+    try:
+        # Use web search enabled model if configured
+        model = config["quick_think_llm"]
+        
+        # Add :online suffix for web search only if use_web_search is enabled
+        if config.get("use_web_search", False):
+            if ":online" not in model and not model.startswith("perplexity/"):
+                model = f"{model}:online"
+        
+        # Adjust system prompt based on web search availability
+        if config.get("use_web_search", False):
+            system_content = f"You are a financial analyst with access to real-time web search. Analyze current social media sentiment and recent news for {ticker} around {curr_date}. Use web search to find the most recent and relevant information."
+        else:
+            system_content = f"You are a financial analyst. Analyze social media sentiment and news patterns for {ticker} based on your training data. Provide analysis based on typical market patterns and known company information."
+        
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_content
+                },
+                {
+                    "role": "user", 
+                    "content": f"{'Search for and ' if config.get('use_web_search', False) else ''}Analyze the latest news, social media sentiment, and market discussions about {ticker} stock around {curr_date}. Include key sentiment indicators, major news events, analyst opinions, and their potential impact on stock price. Focus on information from the last 7 days."
+                }
+            ],
+            temperature=0.7,
+            max_tokens=2048,
+        )
+        
+        # Add prefix to indicate data source type
+        data_source = "[REAL-TIME WEB SEARCH DATA]" if config.get("use_web_search", False) else "[SYNTHETIC ANALYSIS]"
+        return f"{data_source}\n\n{response.choices[0].message.content}"
+        
+    except Exception as e:
+        print(f"Error getting stock news via OpenRouter: {e}")
+        return f"Unable to retrieve stock news for {ticker} due to API error."
 
 
 def get_global_news_openai(curr_date):
+    """
+    Get global news and macroeconomic analysis using OpenRouter with web search capabilities.
+    
+    Args:
+        curr_date (str): Current date in YYYY-MM-DD format
+        
+    Returns:
+        str: Real-time analysis of global news and macroeconomic trends
+    """
     config = get_config()
-    client = OpenAI(base_url=config["backend_url"])
-
-    response = client.responses.create(
-        model=config["quick_think_llm"],
-        input=[
-            {
-                "role": "system",
-                "content": [
-                    {
-                        "type": "input_text",
-                        "text": f"Can you search global or macroeconomics news from 7 days before {curr_date} to {curr_date} that would be informative for trading purposes? Make sure you only get the data posted during that period.",
-                    }
-                ],
-            }
-        ],
-        text={"format": {"type": "text"}},
-        reasoning={},
-        tools=[
-            {
-                "type": "web_search_preview",
-                "user_location": {"type": "approximate"},
-                "search_context_size": "low",
-            }
-        ],
-        temperature=1,
-        max_output_tokens=4096,
-        top_p=1,
-        store=True,
+    client = OpenAI(
+        base_url=config["backend_url"],
+        api_key=os.getenv("OPENROUTER_API_KEY"),
+        default_headers={
+            "HTTP-Referer": config.get("openrouter_site_url", ""),
+            "X-Title": config.get("openrouter_site_name", ""),
+        }
     )
 
-    return response.output[1].content[0].text
+    try:
+        # Use web search enabled model if configured
+        model = config["quick_think_llm"]
+        
+        # Add :online suffix for web search only if use_web_search is enabled
+        if config.get("use_web_search", False):
+            if ":online" not in model and not model.startswith("perplexity/"):
+                model = f"{model}:online"
+        
+        # Adjust system prompt based on web search availability
+        if config.get("use_web_search", False):
+            system_content = f"You are a macroeconomic analyst with access to real-time web search. Analyze current global news and macroeconomic trends around {curr_date} that would be relevant for trading decisions. Use web search to find the most recent and relevant information."
+        else:
+            system_content = f"You are a macroeconomic analyst. Analyze global news patterns and macroeconomic trends based on your training data. Provide analysis based on typical economic patterns and known market factors relevant around {curr_date}."
+        
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_content
+                },
+                {
+                    "role": "user",
+                    "content": f"{'Search for and ' if config.get('use_web_search', False) else ''}Analyze the latest global news, economic indicators, central bank policies, geopolitical developments, and market-moving events around {curr_date}. Focus on information from the last 7 days that could impact financial markets. Include specific data points, policy changes, and expert opinions."
+                }
+            ],
+            temperature=0.7,
+            max_tokens=2048,
+        )
+        
+        # Add prefix to indicate data source type
+        data_source = "[REAL-TIME WEB SEARCH DATA]" if config.get("use_web_search", False) else "[SYNTHETIC ANALYSIS]"
+        return f"{data_source}\n\n{response.choices[0].message.content}"
+        
+    except Exception as e:
+        print(f"Error getting global news via OpenRouter: {e}")
+        return f"Unable to retrieve global news due to API error."
 
 
 def get_fundamentals_openai(ticker, curr_date):
+    """
+    Get fundamental analysis using OpenRouter with web search capabilities.
+    
+    Args:
+        ticker (str): Stock ticker symbol
+        curr_date (str): Current date in YYYY-MM-DD format
+        
+    Returns:
+        str: Real-time fundamental analysis report with current financial data
+    """
     config = get_config()
-    client = OpenAI(base_url=config["backend_url"])
-
-    response = client.responses.create(
-        model=config["quick_think_llm"],
-        input=[
-            {
-                "role": "system",
-                "content": [
-                    {
-                        "type": "input_text",
-                        "text": f"Can you search Fundamental for discussions on {ticker} during of the month before {curr_date} to the month of {curr_date}. Make sure you only get the data posted during that period. List as a table, with PE/PS/Cash flow/ etc",
-                    }
-                ],
-            }
-        ],
-        text={"format": {"type": "text"}},
-        reasoning={},
-        tools=[
-            {
-                "type": "web_search_preview",
-                "user_location": {"type": "approximate"},
-                "search_context_size": "low",
-            }
-        ],
-        temperature=1,
-        max_output_tokens=4096,
-        top_p=1,
-        store=True,
+    client = OpenAI(
+        base_url=config["backend_url"],
+        api_key=os.getenv("OPENROUTER_API_KEY"),
+        default_headers={
+            "HTTP-Referer": config.get("openrouter_site_url", ""),
+            "X-Title": config.get("openrouter_site_name", ""),
+        }
     )
 
-    return response.output[1].content[0].text
+    try:
+        # Use web search enabled model if configured
+        model = config["quick_think_llm"]
+        
+        # Add :online suffix for web search only if use_web_search is enabled
+        if config.get("use_web_search", False):
+            if ":online" not in model and not model.startswith("perplexity/"):
+                model = f"{model}:online"
+        
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": f"You are a fundamental analyst{'with access to real-time web search' if config.get('use_web_search', False) else ''}. Analyze the {'current ' if config.get('use_web_search', False) else ''}fundamental situation of {ticker} around {curr_date}. {'Use web search to find the most recent financial data, earnings reports, and analyst opinions.' if config.get('use_web_search', False) else 'Provide analysis based on typical fundamental patterns and known company characteristics.'}"
+                },
+                {
+                    "role": "user",
+                    "content": f"{'Search for and ' if config.get('use_web_search', False) else ''}Analyze the latest fundamental data for {ticker} stock around {curr_date}. Include recent earnings reports, financial metrics (P/E, P/S, P/B ratios, cash flow, debt levels, revenue growth, profit margins), analyst price targets, credit ratings, and any recent fundamental changes. Focus on the most current financial information available. Present key metrics in table format when possible."
+                }
+            ],
+            temperature=0.7,
+            max_tokens=2048,
+        )
+        
+        # Add prefix to indicate data source type
+        data_source = "[REAL-TIME WEB SEARCH DATA]" if config.get("use_web_search", False) else "[SYNTHETIC ANALYSIS]"
+        return f"{data_source}\n\n{response.choices[0].message.content}"
+        
+    except Exception as e:
+        print(f"Error getting fundamentals via OpenRouter: {e}")
+        return f"Unable to retrieve real-time fundamental analysis for {ticker} due to API error."

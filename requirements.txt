@@ -1,26 +1,34 @@
+# Core dependencies
+python-dotenv
 typing-extensions
+
+# LangChain and OpenAI
 langchain-openai
 langchain-experimental
+langgraph
+openai
+
+# Data processing
 pandas
 yfinance
-praw
-feedparser
 stockstats
-eodhd
-langgraph
-chromadb
-setuptools
-backtrader
-akshare
-tushare
-finnhub-python
-parsel
+
+# Web scraping and APIs
 requests
+feedparser
+praw
+
+# PDF generation
+markdown2
+pdfkit
+
+# Utilities
 tqdm
 pytz
-redis
-chainlit
-rich
-questionary
-langchain_anthropic
-langchain-google-genai
+python-dateutil
+
+# Memory and embeddings
+chromadb
+
+# Build tools
+setuptools

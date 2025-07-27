@@ -1,206 +1,368 @@
-<p align="center">
-  <img src="assets/TauricResearch.png" style="width: 60%; height: auto;">
-</p>
+# TradingAgents: Multi-Agent LLM Financial Trading Framework
 
-<div align="center" style="line-height: 1;">
-  <a href="https://arxiv.org/abs/2412.20138" target="_blank"><img alt="arXiv" src="https://img.shields.io/badge/arXiv-2412.20138-B31B1B?logo=arxiv"/></a>
-  <a href="https://discord.com/invite/hk9PGKShPK" target="_blank"><img alt="Discord" src="https://img.shields.io/badge/Discord-TradingResearch-7289da?logo=discord&logoColor=white&color=7289da"/></a>
-  <a href="./assets/wechat.png" target="_blank"><img alt="WeChat" src="https://img.shields.io/badge/WeChat-TauricResearch-brightgreen?logo=wechat&logoColor=white"/></a>
-  <a href="https://x.com/TauricResearch" target="_blank"><img alt="X Follow" src="https://img.shields.io/badge/X-TauricResearch-white?logo=x&logoColor=white"/></a>
-  <br>
-  <a href="https://github.com/TauricResearch/" target="_blank"><img alt="Community" src="https://img.shields.io/badge/Join_GitHub_Community-TauricResearch-14C290?logo=discourse"/></a>
-</div>
+## Framework Overview
 
-<div align="center">
-  <!-- Keep these links. Translations will automatically update with the README. -->
-  <a href="https://www.readme-i18n.com/TauricResearch/TradingAgents?lang=de">Deutsch</a> | 
-  <a href="https://www.readme-i18n.com/TauricResearch/TradingAgents?lang=es">Español</a> | 
-  <a href="https://www.readme-i18n.com/TauricResearch/TradingAgents?lang=fr">français</a> | 
-  <a href="https://www.readme-i18n.com/TauricResearch/TradingAgents?lang=ja">日本語</a> | 
-  <a href="https://www.readme-i18n.com/TauricResearch/TradingAgents?lang=ko">한국어</a> | 
-  <a href="https://www.readme-i18n.com/TauricResearch/TradingAgents?lang=pt">Português</a> | 
-  <a href="https://www.readme-i18n.com/TauricResearch/TradingAgents?lang=ru">Русский</a> | 
-  <a href="https://www.readme-i18n.com/TauricResearch/TradingAgents?lang=zh">中文</a>
-</div>
+TradingAgents is a multi-agent trading framework that mirrors the dynamics of real-world trading firms. By deploying specialized LLM-powered agents—from fundamental analysts, sentiment experts, and technical analysts, to trader and risk management teams—the platform collaboratively evaluates market conditions and informs trading decisions through dynamic discussions.
 
----
-
-# TradingAgents: Multi-Agents LLM Financial Trading Framework 
-
-> 🎉 **TradingAgents** officially released! We have received numerous inquiries about the work, and we would like to express our thanks for the enthusiasm in our community.
->
-> So we decided to fully open-source the framework. Looking forward to building impactful projects with you!
-
-<div align="center">
-<a href="https://www.star-history.com/#TauricResearch/TradingAgents&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=TauricResearch/TradingAgents&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=TauricResearch/TradingAgents&type=Date" />
-   <img alt="TradingAgents Star History" src="https://api.star-history.com/svg?repos=TauricResearch/TradingAgents&type=Date" style="width: 80%; height: auto;" />
- </picture>
-</a>
-</div>
-
-<div align="center">
-
-🚀 [TradingAgents](#tradingagents-framework) | ⚡ [Installation & CLI](#installation-and-cli) | 🎬 [Demo](https://www.youtube.com/watch?v=90gr5lwjIho) | 📦 [Package Usage](#tradingagents-package) | 🤝 [Contributing](#contributing) | 📄 [Citation](#citation)
-
-</div>
-
-## TradingAgents Framework
-
-TradingAgents is a multi-agent trading framework that mirrors the dynamics of real-world trading firms. By deploying specialized LLM-powered agents: from fundamental analysts, sentiment experts, and technical analysts, to trader, risk management team, the platform collaboratively evaluates market conditions and informs trading decisions. Moreover, these agents engage in dynamic discussions to pinpoint the optimal strategy.
+This version has been optimized to work exclusively with **OpenRouter**, providing access to multiple state-of-the-art language models through a single, unified API **with native web search capabilities** for real-time financial data.
 
 <p align="center">
   <img src="assets/schema.png" style="width: 100%; height: auto;">
 </p>
 
-> TradingAgents framework is designed for research purposes. Trading performance may vary based on many factors, including the chosen backbone language models, model temperature, trading periods, the quality of data, and other non-deterministic factors. [It is not intended as financial, investment, or trading advice.](https://tauric.ai/disclaimer/)
+### Multi-Agent Architecture
 
-Our framework decomposes complex trading tasks into specialized roles. This ensures the system achieves a robust, scalable approach to market analysis and decision-making.
+The framework decomposes complex trading tasks into specialized roles:
 
-### Analyst Team
-- Fundamentals Analyst: Evaluates company financials and performance metrics, identifying intrinsic values and potential red flags.
-- Sentiment Analyst: Analyzes social media and public sentiment using sentiment scoring algorithms to gauge short-term market mood.
-- News Analyst: Monitors global news and macroeconomic indicators, interpreting the impact of events on market conditions.
-- Technical Analyst: Utilizes technical indicators (like MACD and RSI) to detect trading patterns and forecast price movements.
+#### **Analyst Team**
+- **Fundamentals Analyst**: Evaluates company financials and performance metrics **with real-time data**
+- **Sentiment Analyst**: Analyzes social media and public sentiment **from current sources**
+- **News Analyst**: Monitors global news and macroeconomic indicators **in real-time**
+- **Technical Analyst**: Utilizes technical indicators (MACD, RSI, etc.) with live market data
 
 <p align="center">
   <img src="assets/analyst.png" width="100%" style="display: inline-block; margin: 0 2%;">
 </p>
 
-### Researcher Team
-- Comprises both bullish and bearish researchers who critically assess the insights provided by the Analyst Team. Through structured debates, they balance potential gains against inherent risks.
+#### **Researcher Team**
+- **Bull/Bear Researchers**: Critically assess insights through structured debates
+- **Research Manager**: Synthesizes research and makes investment recommendations
 
 <p align="center">
   <img src="assets/researcher.png" width="70%" style="display: inline-block; margin: 0 2%;">
 </p>
 
-### Trader Agent
-- Composes reports from the analysts and researchers to make informed trading decisions. It determines the timing and magnitude of trades based on comprehensive market insights.
+#### **Trading Team**
+- **Trader Agent**: Makes informed trading decisions based on comprehensive analysis
 
 <p align="center">
   <img src="assets/trader.png" width="70%" style="display: inline-block; margin: 0 2%;">
 </p>
 
-### Risk Management and Portfolio Manager
-- Continuously evaluates portfolio risk by assessing market volatility, liquidity, and other risk factors. The risk management team evaluates and adjusts trading strategies, providing assessment reports to the Portfolio Manager for final decision.
-- The Portfolio Manager approves/rejects the transaction proposal. If approved, the order will be sent to the simulated exchange and executed.
+#### **Risk Management Team**
+- **Risk Analysts**: Evaluate portfolio risk from multiple perspectives
+- **Portfolio Manager**: Final decision approval/rejection
 
 <p align="center">
   <img src="assets/risk.png" width="70%" style="display: inline-block; margin: 0 2%;">
 </p>
 
-## Installation and CLI
+## Quick Start
 
 ### Installation
 
-Clone TradingAgents:
 ```bash
-git clone https://github.com/TauricResearch/TradingAgents.git
+# Clone the repository
+git clone https://github.com/ee-ortiz/TradingAgents.git
 cd TradingAgents
-```
 
-Create a virtual environment in any of your favorite environment managers:
-```bash
-conda create -n tradingagents python=3.13
-conda activate tradingagents
-```
+# Create virtual environment
+python3 -m venv venv # On Windows use `python -m venv venv`
+source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 
-Install dependencies:
-```bash
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-### Required APIs
+### Required API Keys
 
-You will also need the FinnHub API for financial data. All of our code is implemented with the free tier.
+To get started, you'll need these API keys:
+
+1. **OpenRouter API Key** (Required)
+   - Sign up at [OpenRouter.ai](https://openrouter.ai/)
+   - Generate an API key in your dashboard
+   - Provides access to 200+ LLM models including DeepSeek R1 and Chat
+   - **Web search capability**: $4 per 1000 results for real-time data
+
+2. **Yahoo Finance** (Free - Built-in)
+   - Real-time stock prices and technical indicators
+   - No API key required - handled automatically
+
+Set your environment variables:
+
 ```bash
-export FINNHUB_API_KEY=$YOUR_FINNHUB_API_KEY
+# Required
+export OPENROUTER_API_KEY="your_openrouter_api_key"
+
+# Optional: For OpenRouter usage tracking
+export OPENROUTER_SITE_URL="your_site_url"
+export OPENROUTER_SITE_NAME="TradingAgents"
 ```
 
-You will need the OpenAI API for all the agents.
+Alternatively, copy `.env.example` to `.env` and fill in your keys:
+
 ```bash
-export OPENAI_API_KEY=$YOUR_OPENAI_API_KEY
+cp .env.example .env
+# Edit .env with your API keys
 ```
 
-### CLI Usage
+### Cost-Effective Setup
 
-You can also try out the CLI directly by running:
-```bash
-python -m cli.main
+**Recommended Budget Configuration:**
+- **DeepSeek R1**: Free reasoning model for complex analysis
+- **DeepSeek Chat**: Free quick responses
+- **Web Search**: ~$0.02 per search (5 results)
+- **Total Cost**: ~$0.06 per complete analysis
+
+```python
+# Budget-friendly configuration
+config = {
+    "deep_think_llm": "deepseek/deepseek-r1-0528:free",
+    "quick_think_llm": "deepseek/deepseek-chat-v3-0324:free", 
+    "use_web_search": True,  # Real-time data for $0.02/search
+}
 ```
-You will see a screen where you can select your desired tickers, date, LLMs, research depth, etc.
+
+### Basic Usage
+
+```python
+from tradingagents.graph.trading_graph import TradingAgentsGraph
+from tradingagents.default_config import DEFAULT_CONFIG
+
+# Initialize with real-time web search enabled
+config = DEFAULT_CONFIG.copy()
+config["use_web_search"] = True  # Enable real-time data access
+
+ta = TradingAgentsGraph(debug=True, config=config)
+
+# Run real-time analysis
+_, decision = ta.propagate("NVDA", "2024-05-10")
+print(f"Trading Decision: {decision}")
+```
+
+### Multiple Configuration Examples
+
+See `main.py` for complete examples:
+
+```python
+# Budget Setup (~$0.06 per analysis)
+config_budget = {
+    "deep_think_llm": "deepseek/deepseek-r1-0528:free",
+    "quick_think_llm": "deepseek/deepseek-chat-v3-0324:free",
+    "use_web_search": True,
+    "max_debate_rounds": 1,
+}
+
+# Balanced Setup (~$0.15 per analysis) 
+config_balanced = {
+    "deep_think_llm": "deepseek/deepseek-r1-0528:free",
+    "quick_think_llm": "openai/gpt-4o-mini",
+    "use_web_search": True,
+    "max_debate_rounds": 2,
+}
+
+# Premium Setup (~$0.50+ per analysis)
+config_premium = {
+    "deep_think_llm": "openai/gpt-4o",
+    "quick_think_llm": "openai/gpt-4o",
+    "use_web_search": True,
+    "max_debate_rounds": 3,
+}
+```
+
+## OpenRouter Web Search Features
+
+This version leverages OpenRouter's **native web search capabilities** for real-time financial data:
+
+### **Real-Time Data Sources**
+- **Current Stock News**: Latest articles and social media sentiment
+- **Global Economic News**: Macroeconomic developments and market events
+- **Company Fundamentals**: Recent earnings, analyst opinions, financial metrics
+- **Market Context**: Real-time market conditions and sector trends
+
+### **Web Search Implementation**
+- **Automatic Model Enhancement**: `:online` suffix added when `use_web_search=True`
+- **Source Citations**: OpenRouter provides URLs for verification
+- **Cost Predictable**: $4 per 1000 search results ($0.02 per 5-result search)
+- **No External APIs**: Eliminates need for FinnHub, NewsAPI, etc.
+
+### **Model Configuration**
+- **DeepSeek R1**: Used for deep reasoning tasks (bull/bear research, risk analysis)
+- **DeepSeek Chat**: Used for quick analysis tasks with web search capability
+- **Free + Web Search**: Most cost-effective real-time analysis
+- **Easy Model Switching**: Change models via config without code changes
+
+### **Performance Features**
+- **No External Embeddings**: Memory system uses ChromaDB's built-in embeddings
+- **Unified API**: Single OpenRouter client handles all LLM interactions
+- **Site Tracking**: Optional OpenRouter usage tracking for rankings
+- **Error Handling**: Robust fallbacks for API limitations
+
+### **Cost Optimization**
+- Uses free tier models by default (DeepSeek family)
+- Optional upgrade to premium models via configuration
+
+## Usage Examples
+
+### Command Line Interface
+
+```bash
+python3 -m cli.main
+```
+
+The CLI provides an interactive interface for selecting tickers, dates, models, and research depth.
 
 <p align="center">
   <img src="assets/cli/cli_init.png" width="100%" style="display: inline-block; margin: 0 2%;">
 </p>
 
-An interface will appear showing results as they load, letting you track the agent's progress as it runs.
+### Python API
 
-<p align="center">
-  <img src="assets/cli/cli_news.png" width="100%" style="display: inline-block; margin: 0 2%;">
-</p>
-
-<p align="center">
-  <img src="assets/cli/cli_transaction.png" width="100%" style="display: inline-block; margin: 0 2%;">
-</p>
-
-## TradingAgents Package
-
-### Implementation Details
-
-We built TradingAgents with LangGraph to ensure flexibility and modularity. We utilize `o1-preview` and `gpt-4o` as our deep thinking and fast thinking LLMs for our experiments. However, for testing purposes, we recommend you use `o4-mini` and `gpt-4.1-mini` to save on costs as our framework makes **lots of** API calls.
-
-### Python Usage
-
-To use TradingAgents inside your code, you can import the `tradingagents` module and initialize a `TradingAgentsGraph()` object. The `.propagate()` function will return a decision. You can run `main.py`, here's also a quick example:
-
+#### Basic Configuration
 ```python
 from tradingagents.graph.trading_graph import TradingAgentsGraph
 from tradingagents.default_config import DEFAULT_CONFIG
 
-ta = TradingAgentsGraph(debug=True, config=DEFAULT_CONFIG.copy())
-
-# forward propagate
-_, decision = ta.propagate("NVDA", "2024-05-10")
-print(decision)
+# Use defaults (DeepSeek models)
+ta = TradingAgentsGraph(debug=True, config=DEFAULT_CONFIG)
+_, decision = ta.propagate("AAPL", "2024-05-10")
 ```
 
-You can also adjust the default configuration to set your own choice of LLMs, debate rounds, etc.
-
+#### Custom Configuration
 ```python
-from tradingagents.graph.trading_graph import TradingAgentsGraph
-from tradingagents.default_config import DEFAULT_CONFIG
-
-# Create a custom config
 config = DEFAULT_CONFIG.copy()
-config["deep_think_llm"] = "gpt-4.1-nano"  # Use a different model
-config["quick_think_llm"] = "gpt-4.1-nano"  # Use a different model
-config["max_debate_rounds"] = 1  # Increase debate rounds
-config["online_tools"] = True # Use online tools or cached data
 
-# Initialize with custom config
+# Customize models
+config["deep_think_llm"] = "openai/o4-mini-high"      # Reasoning model
+config["quick_think_llm"] = "openai/gpt-4o-mini"    # Fast model
+
+# Adjust debate rounds
+config["max_debate_rounds"] = 3
+config["max_risk_discuss_rounds"] = 2
+
+# Initialize
 ta = TradingAgentsGraph(debug=True, config=config)
-
-# forward propagate
-_, decision = ta.propagate("NVDA", "2024-05-10")
-print(decision)
+_, decision = ta.propagate("TSLA", "2024-05-10")
 ```
 
-> For `online_tools`, we recommend enabling them for experimentation, as they provide access to real-time data. The agents' offline tools rely on cached data from our **Tauric TradingDB**, a curated dataset we use for backtesting. We're currently in the process of refining this dataset, and we plan to release it soon alongside our upcoming projects. Stay tuned!
+#### Memory and Reflection
+```python
+# Run analysis
+_, decision = ta.propagate("NVDA", "2024-05-10")
 
-You can view the full list of configurations in `tradingagents/default_config.py`.
+# Learn from results (after knowing actual returns)
+ta.reflect_and_remember(1000)  # Positive return
+# ta.reflect_and_remember(-500)  # Negative return
+```
 
-## Contributing
+### PDF Report Generation
 
-We welcome contributions from the community! Whether it's fixing a bug, improving documentation, or suggesting a new feature, your input helps make this project better. If you are interested in this line of research, please consider joining our open-source financial AI research community [Tauric Research](https://tauric.ai/).
+TradingAgents automatically generates professional PDF reports alongside markdown reports for enhanced readability and presentation.
+
+#### Automatic PDF Generation
+PDFs are generated automatically after each analysis when the required dependencies are installed:
+
+#### Manual PDF Generation
+Generate PDFs from existing markdown reports:
+
+```bash
+# Generate PDFs for specific analysis
+python3 generate_pdfs.py --symbol NVDA --date 2025-07-24
+
+# Generate PDFs for latest analysis
+python3 generate_pdfs.py --symbol NVDA --latest
+
+# Generate PDFs for all analyses
+python3 generate_pdfs.py --all
+
+# List available analyses
+python3 generate_pdfs.py --list
+```
+
+#### PDF Output Structure
+```
+results/
+└── NVDA/
+    └── 2025-07-24/
+        ├── reports/           # Original markdown reports
+        │   ├── market_report.md
+        │   ├── sentiment_report.md
+        │   └── ...
+        └── reports_pdf/       # Generated PDF reports
+            ├── NVDA_2025-07-24_analysis_report.pdf  # Comprehensive report
+            └── NVDA_2025-07-24_summary.pdf          # Executive summary
+```
+
+## Configuration
+
+### Available Models (OpenRouter)
+
+#### **Free Models**
+- `deepseek-r1-0528`: Advanced reasoning model (default for deep thinking)
+- `deepseek-chat-v3-0324`: Fast chat model (default for quick thinking)
+- `llama-3.3-70b-instruct`: Meta's Llama 3.3 70B Instruct
+- `gemma-3-27b-it`: Google's Gemma 3 27B
+- `mistral-small-3.1-24b-instruct`: Mistral Small 3.1 24B Instruct
+- Many more available
+
+#### **Model Configuration**
+```python
+# Full OpenRouter names
+config["deep_think_llm"] = "deepseek/deepseek-r1-0528:free"
+config["quick_think_llm"] = "deepseek/deepseek-chat-v3-0324:free"
+```
+
+### Configuration Options
+
+```python
+DEFAULT_CONFIG = {
+    # LLM Settings
+    "llm_provider": "openrouter",
+    "deep_think_llm": "deepseek/deepseek-r1-0528:free",        # Model for deep analysis
+    "quick_think_llm": "deepseek/deepseek-chat-v3-0324:free",     # Model for quick analysis
+
+    # Debate Settings
+    "max_debate_rounds": 1,                 # Bull/Bear debate rounds
+    "max_risk_discuss_rounds": 1,           # Risk discussion rounds
+    
+    # Data Settings
+    "online_tools": True,                   # True = live data, False = cached
+    "use_web_search": True,                 # Enable real-time web search
+    
+    # OpenRouter Settings (optional)
+    "openrouter_site_url": "",              # For rankings
+    "openrouter_site_name": "TradingAgents", # For rankings
+}
+```
+
+### Cost-Effective Configuration
+
+```python
+# Minimal cost configuration
+config = DEFAULT_CONFIG.copy()
+config["deep_think_llm"] = "deepseek/deepseek-chat-v3-0324:free"     # Use fast model for both
+config["quick_think_llm"] = "deepseek/deepseek-chat-v3-0324:free"
+config["max_debate_rounds"] = 1                # Fewer rounds
+config["max_risk_discuss_rounds"] = 1
+```
+
+### High-Quality Configuration
+
+```python
+# Maximum quality configuration
+config = DEFAULT_CONFIG.copy()
+config["deep_think_llm"] = "openai/o3"       # Reasoning model
+config["quick_think_llm"] = "openai/gpt-4.1"    # Fast model
+config["max_debate_rounds"] = 3                # More debate rounds
+config["max_risk_discuss_rounds"] = 2
+config["online_tools"] = True                  # Live data
+```
+
+## Acknowledgments
+
+This project is based on the original [TradingAgents](https://github.com/TauricResearch/TradingAgents) framework by [Tauric Research](https://tauric.ai/). We extend our gratitude to the original authors for their groundbreaking work in multi-agent financial analysis.
+
+### Original Authors
+- Yijia Xiao (UCLA)
+- Edward Sun
+- Di Luo
+- Wei Wang
 
 ## Citation
 
-Please reference our work if you find *TradingAgents* provides you with some help :)
+If you use TradingAgents in your research, please cite the original work:
 
-```
+```bibtex
 @misc{xiao2025tradingagentsmultiagentsllmfinancial,
       title={TradingAgents: Multi-Agents LLM Financial Trading Framework}, 
       author={Yijia Xiao and Edward Sun and Di Luo and Wei Wang},
@@ -211,3 +373,7 @@ Please reference our work if you find *TradingAgents* provides you with some hel
       url={https://arxiv.org/abs/2412.20138}, 
 }
 ```
+
+## License
+
+This project maintains the same license as the original TradingAgents framework. Please refer to the LICENSE file for details.

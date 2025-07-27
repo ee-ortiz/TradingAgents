@@ -3,24 +3,24 @@
 import os
 from pathlib import Path
 import json
-from datetime import date
 from typing import Dict, Any, Tuple, List, Optional
-
-from langchain_openai import ChatOpenAI
-from langchain_anthropic import ChatAnthropic
-from langchain_google_genai import ChatGoogleGenerativeAI
 
 from langgraph.prebuilt import ToolNode
 
 from tradingagents.agents import *
 from tradingagents.default_config import DEFAULT_CONFIG
 from tradingagents.agents.utils.memory import FinancialSituationMemory
-from tradingagents.agents.utils.agent_states import (
-    AgentState,
-    InvestDebateState,
-    RiskDebateState,
-)
+from tradingagents.agents.utils.agent_states import AgentState
 from tradingagents.dataflows.interface import set_config
+from tradingagents.llm_providers import ChatOpenRouter, get_model_name
+
+# Try to import PDF generation (optional)
+try:
+    from tradingagents.utils.pdf_generator import generate_pdf_reports
+    PDF_AVAILABLE = True
+except ImportError:
+    PDF_AVAILABLE = False
+    generate_pdf_reports = None
 
 from .conditional_logic import ConditionalLogic
 from .setup import GraphSetup
@@ -57,18 +57,20 @@ class TradingAgentsGraph:
             exist_ok=True,
         )
 
-        # Initialize LLMs
-        if self.config["llm_provider"].lower() == "openai" or self.config["llm_provider"] == "ollama" or self.config["llm_provider"] == "openrouter":
-            self.deep_thinking_llm = ChatOpenAI(model=self.config["deep_think_llm"], base_url=self.config["backend_url"])
-            self.quick_thinking_llm = ChatOpenAI(model=self.config["quick_think_llm"], base_url=self.config["backend_url"])
-        elif self.config["llm_provider"].lower() == "anthropic":
-            self.deep_thinking_llm = ChatAnthropic(model=self.config["deep_think_llm"], base_url=self.config["backend_url"])
-            self.quick_thinking_llm = ChatAnthropic(model=self.config["quick_think_llm"], base_url=self.config["backend_url"])
-        elif self.config["llm_provider"].lower() == "google":
-            self.deep_thinking_llm = ChatGoogleGenerativeAI(model=self.config["deep_think_llm"])
-            self.quick_thinking_llm = ChatGoogleGenerativeAI(model=self.config["quick_think_llm"])
-        else:
-            raise ValueError(f"Unsupported LLM provider: {self.config['llm_provider']}")
+        # Initialize LLMs - OpenRouter only
+        deep_model = get_model_name(self.config["deep_think_llm"])
+        quick_model = get_model_name(self.config["quick_think_llm"])
+        
+        self.deep_thinking_llm = ChatOpenRouter(
+            model=deep_model,
+            openrouter_site_url=self.config.get("openrouter_site_url"),
+            openrouter_site_name=self.config.get("openrouter_site_name"),
+        )
+        self.quick_thinking_llm = ChatOpenRouter(
+            model=quick_model,
+            openrouter_site_url=self.config.get("openrouter_site_url"),
+            openrouter_site_name=self.config.get("openrouter_site_name"),
+        )
         
         self.toolkit = Toolkit(config=self.config)
 
@@ -82,8 +84,11 @@ class TradingAgentsGraph:
         # Create tool nodes
         self.tool_nodes = self._create_tool_nodes()
 
-        # Initialize components
-        self.conditional_logic = ConditionalLogic()
+        # Initialize components with configuration
+        self.conditional_logic = ConditionalLogic(
+            max_debate_rounds=self.config["max_debate_rounds"],
+            max_risk_discuss_rounds=self.config["max_risk_discuss_rounds"]
+        )
         self.graph_setup = GraphSetup(
             self.quick_thinking_llm,
             self.deep_thinking_llm,
@@ -97,7 +102,7 @@ class TradingAgentsGraph:
             self.conditional_logic,
         )
 
-        self.propagator = Propagator()
+        self.propagator = Propagator(max_recur_limit=self.config["max_recur_limit"])
         self.reflector = Reflector(self.quick_thinking_llm)
         self.signal_processor = SignalProcessor(self.quick_thinking_llm)
 
@@ -186,6 +191,9 @@ class TradingAgentsGraph:
         # Log state
         self._log_state(trade_date, final_state)
 
+        # Generate PDF reports if available
+        self._generate_pdf_reports(company_name, trade_date)
+
         # Return decision and processed signal
         return final_state, self.process_signal(final_state["final_trade_decision"])
 
@@ -230,6 +238,32 @@ class TradingAgentsGraph:
             "w",
         ) as f:
             json.dump(self.log_states_dict, f, indent=4)
+
+    def _generate_pdf_reports(self, symbol: str, trade_date: str):
+        """Generate PDF reports from markdown reports."""
+        if not PDF_AVAILABLE:
+            if self.debug:
+                print("PDF generation not available. Install with: pip install pdfkit markdown2")
+            return
+
+        try:
+            # Generate PDF reports
+            results_dir = self.config.get("results_dir", "./results")
+            pdf_result = generate_pdf_reports(symbol, trade_date, results_dir)
+            
+            if "error" in pdf_result:
+                if self.debug:
+                    print(f"PDF generation error: {pdf_result['error']}")
+            else:
+                if self.debug:
+                    print(f"PDF reports generated successfully:")
+                    print(f"  - Full report: {pdf_result.get('full_report', 'N/A')}")
+                    print(f"  - Summary: {pdf_result.get('summary', 'N/A')}")
+                    print(f"  - Output directory: {pdf_result.get('output_dir', 'N/A')}")
+                    
+        except Exception as e:
+            if self.debug:
+                print(f"Failed to generate PDF reports: {str(e)}")
 
     def reflect_and_remember(self, returns_losses):
         """Reflect on decisions and update memory based on returns."""

@@ -17,7 +17,7 @@ from langchain_core.messages import HumanMessage
 
 def create_msg_delete():
     def delete_messages(state):
-        """Clear messages and add placeholder for Anthropic compatibility"""
+        """Clear messages and add placeholder for better compatibility with various LLM providers"""
         messages = state["messages"]
         
         # Remove all messages
@@ -345,7 +345,8 @@ class Toolkit:
     @tool
     def get_google_news(
         query: Annotated[str, "Query to search with"],
-        curr_date: Annotated[str, "Curr date in yyyy-mm-dd format"],
+        curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+        look_back_days: Annotated[int, "How many days to look back"] = 7,
     ):
         """
         Retrieve the latest news from Google News based on a query and date range.
@@ -357,7 +358,7 @@ class Toolkit:
             str: A formatted string containing the latest news from Google News based on the query and date range.
         """
 
-        google_news_results = interface.get_google_news(query, curr_date, 7)
+        google_news_results = interface.get_google_news(query, curr_date, look_back_days)
 
         return google_news_results
 
@@ -368,12 +369,12 @@ class Toolkit:
         curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
     ):
         """
-        Retrieve the latest news about a given stock by using OpenAI's news API.
+        Retrieve REAL-TIME news about a given stock using OpenRouter's web search capabilities.
         Args:
             ticker (str): Ticker of a company. e.g. AAPL, TSM
             curr_date (str): Current date in yyyy-mm-dd format
         Returns:
-            str: A formatted string containing the latest news about the company on the given date.
+            str: Real-time news analysis with current data from web search.
         """
 
         openai_news_results = interface.get_stock_news_openai(ticker, curr_date)
@@ -386,11 +387,11 @@ class Toolkit:
         curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
     ):
         """
-        Retrieve the latest macroeconomics news on a given date using OpenAI's macroeconomics news API.
+        Retrieve REAL-TIME global macroeconomic news using OpenRouter's web search capabilities.
         Args:
             curr_date (str): Current date in yyyy-mm-dd format
         Returns:
-            str: A formatted string containing the latest macroeconomic news on the given date.
+            str: Real-time macroeconomic analysis with current data from web search.
         """
 
         openai_news_results = interface.get_global_news_openai(curr_date)
@@ -404,12 +405,12 @@ class Toolkit:
         curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
     ):
         """
-        Retrieve the latest fundamental information about a given stock on a given date by using OpenAI's news API.
+        Retrieve REAL-TIME fundamental analysis using OpenRouter's web search capabilities.
         Args:
             ticker (str): Ticker of a company. e.g. AAPL, TSM
             curr_date (str): Current date in yyyy-mm-dd format
         Returns:
-            str: A formatted string containing the latest fundamental information about the company on the given date.
+            str: Real-time fundamental analysis with current financial data from web search.
         """
 
         openai_fundamentals_results = interface.get_fundamentals_openai(

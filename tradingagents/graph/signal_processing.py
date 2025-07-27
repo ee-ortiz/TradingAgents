@@ -1,5 +1,6 @@
 # TradingAgents/graph/signal_processing.py
 
+from typing import Dict, Any
 from langchain_openai import ChatOpenAI
 
 
