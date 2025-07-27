@@ -33,6 +33,7 @@ setup(
         "requests>=2.32.4",
         "feedparser>=6.0.11",
         "praw>=7.8.1",
+        "finnhub-python>=2.4.0",
 
         # PDF generation
         "pdfkit>=1.0.0",

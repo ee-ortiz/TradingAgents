@@ -15,9 +15,8 @@ def create_fundamentals_analyst(llm, toolkit):
             tools = [
                 toolkit.get_finnhub_company_insider_sentiment,
                 toolkit.get_finnhub_company_insider_transactions,
-                toolkit.get_simfin_balance_sheet,
-                toolkit.get_simfin_cashflow,
-                toolkit.get_simfin_income_stmt,
+                toolkit.get_finnhub_company_profile,
+                toolkit.get_finnhub_basic_financials,
             ]
 
         system_message = (

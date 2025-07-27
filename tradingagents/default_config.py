@@ -32,4 +32,6 @@ DEFAULT_CONFIG = {
     # ─────────── Data Source Controls ───────────
     "online_tools": True,        # True: Yahoo Finance API, False: local CSV files
     "use_web_search": True,      # True: LLM web search, False: pre-trained knowledge only
+    "use_finnhub_api": True,     # True: Real-time Finnhub API, False: cached data only
+    "finnhub_api_key": os.getenv("FINNHUB_API_KEY"),  # Finnhub API key for real-time data
 }

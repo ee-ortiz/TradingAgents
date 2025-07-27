@@ -17,6 +17,7 @@ stockstats
 requests
 feedparser
 praw
+finnhub-python
 
 # PDF generation
 markdown2

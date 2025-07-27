@@ -50,23 +50,6 @@ class Toolkit:
 
     @staticmethod
     @tool
-    def get_reddit_news(
-        curr_date: Annotated[str, "Date you want to get news for in yyyy-mm-dd format"],
-    ) -> str:
-        """
-        Retrieve global news from Reddit within a specified time frame.
-        Args:
-            curr_date (str): Date you want to get news for in yyyy-mm-dd format
-        Returns:
-            str: A formatted dataframe containing the latest global news from Reddit in the specified time frame.
-        """
-        
-        global_news_result = interface.get_reddit_global_news(curr_date, 7, 5)
-
-        return global_news_result
-
-    @staticmethod
-    @tool
     def get_finnhub_news(
         ticker: Annotated[
             str,
@@ -96,28 +79,6 @@ class Toolkit:
         )
 
         return finnhub_news_result
-
-    @staticmethod
-    @tool
-    def get_reddit_stock_info(
-        ticker: Annotated[
-            str,
-            "Ticker of a company. e.g. AAPL, TSM",
-        ],
-        curr_date: Annotated[str, "Current date you want to get news for"],
-    ) -> str:
-        """
-        Retrieve the latest news about a given stock from Reddit, given the current date.
-        Args:
-            ticker (str): Ticker of a company. e.g. AAPL, TSM
-            curr_date (str): current date in yyyy-mm-dd format to get news for
-        Returns:
-            str: A formatted dataframe containing the latest news about the company on the given date
-        """
-
-        stock_news_results = interface.get_reddit_company_news(ticker, curr_date, 7, 5)
-
-        return stock_news_results
 
     @staticmethod
     @tool
@@ -269,77 +230,37 @@ class Toolkit:
 
     @staticmethod
     @tool
-    def get_simfin_balance_sheet(
-        ticker: Annotated[str, "ticker symbol"],
-        freq: Annotated[
-            str,
-            "reporting frequency of the company's financial history: annual/quarterly",
-        ],
-        curr_date: Annotated[str, "current date you are trading at, yyyy-mm-dd"],
+    def get_finnhub_company_profile(
+        ticker: Annotated[str, "ticker symbol"]
     ):
         """
-        Retrieve the most recent balance sheet of a company
+        Retrieve comprehensive company profile information from Finnhub
+
         Args:
             ticker (str): ticker symbol of the company
-            freq (str): reporting frequency of the company's financial history: annual / quarterly
-            curr_date (str): current date you are trading at, yyyy-mm-dd
         Returns:
-            str: a report of the company's most recent balance sheet
+            str: detailed company profile including industry, market cap, description, etc.
         """
 
-        data_balance_sheet = interface.get_simfin_balance_sheet(ticker, freq, curr_date)
-
-        return data_balance_sheet
+        profile_data = interface.get_finnhub_company_profile(ticker)
+        return profile_data
 
     @staticmethod
     @tool
-    def get_simfin_cashflow(
-        ticker: Annotated[str, "ticker symbol"],
-        freq: Annotated[
-            str,
-            "reporting frequency of the company's financial history: annual/quarterly",
-        ],
-        curr_date: Annotated[str, "current date you are trading at, yyyy-mm-dd"],
+    def get_finnhub_basic_financials(
+        ticker: Annotated[str, "ticker symbol"]
     ):
         """
-        Retrieve the most recent cash flow statement of a company
+        Retrieve key financial metrics and ratios from Finnhub
+
         Args:
             ticker (str): ticker symbol of the company
-            freq (str): reporting frequency of the company's financial history: annual / quarterly
-            curr_date (str): current date you are trading at, yyyy-mm-dd
         Returns:
-                str: a report of the company's most recent cash flow statement
+            str: financial metrics including P/E, ROE, debt ratios, growth rates, etc.
         """
 
-        data_cashflow = interface.get_simfin_cashflow(ticker, freq, curr_date)
-
-        return data_cashflow
-
-    @staticmethod
-    @tool
-    def get_simfin_income_stmt(
-        ticker: Annotated[str, "ticker symbol"],
-        freq: Annotated[
-            str,
-            "reporting frequency of the company's financial history: annual/quarterly",
-        ],
-        curr_date: Annotated[str, "current date you are trading at, yyyy-mm-dd"],
-    ):
-        """
-        Retrieve the most recent income statement of a company
-        Args:
-            ticker (str): ticker symbol of the company
-            freq (str): reporting frequency of the company's financial history: annual / quarterly
-            curr_date (str): current date you are trading at, yyyy-mm-dd
-        Returns:
-                str: a report of the company's most recent income statement
-        """
-
-        data_income_stmt = interface.get_simfin_income_statements(
-            ticker, freq, curr_date
-        )
-
-        return data_income_stmt
+        financials_data = interface.get_finnhub_basic_financials(ticker)
+        return financials_data
 
     @staticmethod
     @tool

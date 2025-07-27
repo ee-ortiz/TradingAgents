@@ -74,7 +74,13 @@ To get started, you'll need these API keys:
    - Provides access to 200+ LLM models including DeepSeek R1 and Chat
    - **Web search capability**: $4 per 1000 results for real-time data
 
-2. **Yahoo Finance** (Free - Built-in)
+2. **Finnhub API Key** (Optional but Recommended)
+   - Sign up at [Finnhub.io](https://finnhub.io/register)
+   - Free tier: 60 API calls/minute, 100 calls/day
+   - **Structured financial data**: Insider transactions, sentiment, earnings, fundamentals
+   - **Complements OpenRouter**: Provides precise data while OpenRouter provides context
+
+3. **Yahoo Finance** (Free - Built-in)
    - Real-time stock prices and technical indicators
    - No API key required - handled automatically
 
@@ -83,6 +89,9 @@ Set your environment variables:
 ```bash
 # Required
 export OPENROUTER_API_KEY="your_openrouter_api_key"
+
+# Optional but recommended for structured financial data
+export FINNHUB_API_KEY="your_finnhub_api_key"
 
 # Optional: For OpenRouter usage tracking
 export OPENROUTER_SITE_URL="your_site_url"
@@ -102,6 +111,7 @@ cp .env.example .env
 - **DeepSeek R1**: Free reasoning model for complex analysis
 - **DeepSeek Chat**: Free quick responses
 - **Web Search**: ~$0.02 per search (5 results)
+- **Finnhub API**: Free tier for structured financial data
 - **Total Cost**: ~$0.06 per complete analysis
 
 ```python
@@ -110,6 +120,7 @@ config = {
     "deep_think_llm": "deepseek/deepseek-r1-0528:free",
     "quick_think_llm": "deepseek/deepseek-chat-v3-0324:free", 
     "use_web_search": True,  # Real-time data for $0.02/search
+    "use_finnhub_api": True,  # Structured financial data
 }
 ```
 
@@ -140,6 +151,7 @@ config_budget = {
     "deep_think_llm": "deepseek/deepseek-r1-0528:free",
     "quick_think_llm": "deepseek/deepseek-chat-v3-0324:free",
     "use_web_search": True,
+    "use_finnhub_api": True,
     "max_debate_rounds": 1,
 }
 
@@ -148,6 +160,7 @@ config_balanced = {
     "deep_think_llm": "deepseek/deepseek-r1-0528:free",
     "quick_think_llm": "openai/gpt-4o-mini",
     "use_web_search": True,
+    "use_finnhub_api": True,
     "max_debate_rounds": 2,
 }
 
@@ -156,31 +169,40 @@ config_premium = {
     "deep_think_llm": "openai/gpt-4o",
     "quick_think_llm": "openai/gpt-4o",
     "use_web_search": True,
+    "use_finnhub_api": True,
     "max_debate_rounds": 3,
 }
 ```
 
-## OpenRouter Web Search Features
+## Hybrid Data Sources: OpenRouter + Finnhub
 
-This version leverages OpenRouter's **native web search capabilities** for real-time financial data:
+This version combines **OpenRouter's web search capabilities** with **Finnhub's structured financial data** for comprehensive real-time analysis:
 
-### **Real-Time Data Sources**
+### **OpenRouter Web Search** (General Context)
 - **Current Stock News**: Latest articles and social media sentiment
-- **Global Economic News**: Macroeconomic developments and market events
-- **Company Fundamentals**: Recent earnings, analyst opinions, financial metrics
+- **Global Economic News**: Macroeconomic developments and market events  
 - **Market Context**: Real-time market conditions and sector trends
+- **Cost**: $0.02 per 5-result search
 
-### **Web Search Implementation**
+### **Finnhub API** (Structured Data)
+- **Insider Transactions**: SEC-reported insider trading activity
+- **Insider Sentiment**: Quantified insider buying/selling patterns
+- **Company Fundamentals**: Precise earnings, financial metrics, ratios
+- **Cost**: Free tier (60 calls/minute, 100/day) or paid plans
+
+### **Complementary Strengths**
+- **OpenRouter**: Broad market context and qualitative analysis
+- **Finnhub**: Precise, structured financial data and insider activity
+- **Yahoo Finance**: Historical price data and technical indicators
+- **Automatic Fallback**: If Finnhub API fails, uses cached data
+
+### **Implementation Features**
+- **Dual API Support**: Real-time APIs + cached fallbacks
 - **Source Citations**: OpenRouter provides URLs for verification
-- **Cost Predictable**: $4 per 1000 search results ($0.02 per 5-result search)
-- **No External APIs**: Eliminates need for FinnHub, NewsAPI, etc.
-
-### **Model Configuration**
-- **Easy Model Switching**: Change models via config without code changes
-
-### **Performance Features**
+- **Cost Optimization**: Strategic use of each API for its strengths
 - **No External Embeddings**: Memory system uses ChromaDB's built-in embeddings
 - **Unified API**: Single OpenRouter client handles all LLM interactions
+- **Robust Fallbacks**: Automatic fallback to cached data if APIs fail
 
 ### **Cost Optimization**
 - Uses free tier models by default (DeepSeek family)
@@ -312,6 +334,7 @@ DEFAULT_CONFIG = {
     # Data Settings
     "online_tools": True,                   # True = live data, False = cached
     "use_web_search": True,                 # Enable real-time web search
+    "use_finnhub_api": True,                # Enable real-time Finnhub API
     
     # OpenRouter Settings (optional)
     "openrouter_site_url": "",              # For rankings
@@ -322,12 +345,26 @@ DEFAULT_CONFIG = {
 ### Cost-Effective Configuration
 
 ```python
-# Minimal cost configuration
+# Minimal cost configuration (Free models + minimal API usage)
 config = DEFAULT_CONFIG.copy()
 config["deep_think_llm"] = "deepseek/deepseek-chat-v3-0324:free"     # Use fast model for both
 config["quick_think_llm"] = "deepseek/deepseek-chat-v3-0324:free"
 config["max_debate_rounds"] = 1                # Fewer rounds
 config["max_risk_discuss_rounds"] = 1
+config["use_web_search"] = True                # Low cost web search
+config["use_finnhub_api"] = True               # Free tier Finnhub
+```
+
+### Balanced Configuration
+
+```python
+# Balanced performance and cost
+config = DEFAULT_CONFIG.copy()
+config["deep_think_llm"] = "deepseek/deepseek-r1-0528:free"      # Advanced reasoning
+config["quick_think_llm"] = "openai/gpt-4o-mini"                 # Premium quick model
+config["max_debate_rounds"] = 2
+config["use_web_search"] = True                # Strategic web search
+config["use_finnhub_api"] = True               # Structured data advantage
 ```
 
 ### High-Quality Configuration
@@ -335,11 +372,13 @@ config["max_risk_discuss_rounds"] = 1
 ```python
 # Maximum quality configuration
 config = DEFAULT_CONFIG.copy()
-config["deep_think_llm"] = "openai/o3"       # Reasoning model
-config["quick_think_llm"] = "openai/gpt-4.1"    # Fast model
+config["deep_think_llm"] = "openai/o3"       # Top reasoning model
+config["quick_think_llm"] = "openai/gpt-4.1"    # Premium fast model
 config["max_debate_rounds"] = 3                # More debate rounds
 config["max_risk_discuss_rounds"] = 2
-config["online_tools"] = True                  # Live data
+config["online_tools"] = True                  # All live data sources
+config["use_web_search"] = True                # Comprehensive web search
+config["use_finnhub_api"] = True               # Real-time structured data
 ```
 
 ## Acknowledgments
